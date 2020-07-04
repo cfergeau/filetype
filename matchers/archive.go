@@ -32,8 +32,8 @@ var (
 )
 
 var Archive = Map{
-	TypeEpub:   bytePrefixMatcher(epubMagic),
 	TypeZip:    Zip,
+	TypeEpub:   ChildMatcher(TypeZip, TypeEpub, Epub),
 	TypeTar:    Tar,
 	TypeRar:    Rar,
 	TypeGz:     bytePrefixMatcher(gzMagic),
@@ -101,6 +101,10 @@ func Zip(buf []byte) bool {
 		buf[0] == 0x50 && buf[1] == 0x4B &&
 		(buf[2] == 0x3 || buf[2] == 0x5 || buf[2] == 0x7) &&
 		(buf[3] == 0x4 || buf[3] == 0x6 || buf[3] == 0x8)
+}
+
+func Epub(buf []byte) bool {
+	return compareBytes(buf, epubMagic, 0)
 }
 
 func Tar(buf []byte) bool {
