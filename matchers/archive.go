@@ -90,7 +90,7 @@ var (
 	lzMagic   = []byte{0x4C, 0x5A, 0x49, 0x50}
 )
 
-func bytePrefixMatcher(magicPattern []byte) Matcher {
+func bytePrefixMatcher(magicPattern []byte) ByteMatcher {
 	return func(data []byte) bool {
 		return compareBytes(data, magicPattern, 0)
 	}
