@@ -104,29 +104,35 @@ func Zip(buf []byte) bool {
 }
 
 func Tar(buf []byte) bool {
-	return len(buf) > 261 &&
-		buf[257] == 0x75 && buf[258] == 0x73 &&
-		buf[259] == 0x74 && buf[260] == 0x61 &&
-		buf[261] == 0x72
+	var tarMagic = []byte{0x75, 0x73, 0x74, 0x61, 0x72}
+	return compareBytes(buf, tarMagic, 257)
 }
 
 func Rar(buf []byte) bool {
-	return len(buf) > 6 &&
-		buf[0] == 0x52 && buf[1] == 0x61 && buf[2] == 0x72 &&
-		buf[3] == 0x21 && buf[4] == 0x1A && buf[5] == 0x7 &&
-		(buf[6] == 0x0 || buf[6] == 0x1)
+	var (
+		rarMagic1 = []byte{0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x00}
+		rarMagic2 = []byte{0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x01}
+	)
+	return compareBytes(buf, rarMagic1, 0) ||
+		compareBytes(buf, rarMagic2, 0)
 }
 
 func Swf(buf []byte) bool {
-	return len(buf) > 2 &&
-		(buf[0] == 0x43 || buf[0] == 0x46) &&
-		buf[1] == 0x57 && buf[2] == 0x53
+	var (
+		swfMagic1 = []byte{0x43, 0x57, 0x53}
+		swfMagic2 = []byte{0x46, 0x57, 0x53}
+	)
+	return compareBytes(buf, swfMagic1, 0) ||
+		compareBytes(buf, swfMagic2, 0)
 }
 
 func Cab(buf []byte) bool {
-	return len(buf) > 3 &&
-		((buf[0] == 0x4D && buf[1] == 0x53 && buf[2] == 0x43 && buf[3] == 0x46) ||
-			(buf[0] == 0x49 && buf[1] == 0x53 && buf[2] == 0x63 && buf[3] == 0x28))
+	var (
+		cabMagic1 = []byte{0x4D, 0x53, 0x43, 0x46}
+		cabMagic2 = []byte{0x49, 0x53, 0x63, 0x28}
+	)
+	return compareBytes(buf, cabMagic1, 0) ||
+		compareBytes(buf, cabMagic2, 0)
 }
 
 func Eot(buf []byte) bool {
@@ -140,34 +146,36 @@ func Eot(buf []byte) bool {
 }
 
 func Z(buf []byte) bool {
-	return len(buf) > 1 &&
-		((buf[0] == 0x1F && buf[1] == 0xA0) ||
-			(buf[0] == 0x1F && buf[1] == 0x9D))
+	var (
+		zMagic1 = []byte{0x1F, 0xA0}
+		zMagic2 = []byte{0x1F, 0x9D}
+	)
+	return compareBytes(buf, zMagic1, 0) ||
+		compareBytes(buf, zMagic2, 0)
 }
 
 func Rpm(buf []byte) bool {
+	var rpmMagic = []byte{0xED, 0xAB, 0xEE, 0xDB}
 	return len(buf) > 96 &&
-		buf[0] == 0xED && buf[1] == 0xAB &&
-		buf[2] == 0xEE && buf[3] == 0xDB
+		compareBytes(buf, rpmMagic, 0)
 }
 
 func Elf(buf []byte) bool {
+	var elfMagic = []byte{
+		0x7F, 0x45, 0x4C, 0x46,
+	}
 	return len(buf) > 52 &&
-		buf[0] == 0x7F && buf[1] == 0x45 &&
-		buf[2] == 0x4C && buf[3] == 0x46
+		compareBytes(buf, elfMagic, 0)
 }
 
 func Dcm(buf []byte) bool {
-	return len(buf) > 131 &&
-		buf[128] == 0x44 && buf[129] == 0x49 &&
-		buf[130] == 0x43 && buf[131] == 0x4D
+	var dcmMagic = []byte{0x44, 0x49, 0x43, 0x4D}
+	return compareBytes(buf, dcmMagic, 128)
 }
 
 func Iso(buf []byte) bool {
-	return len(buf) > 32773 &&
-		buf[32769] == 0x43 && buf[32770] == 0x44 &&
-		buf[32771] == 0x30 && buf[32772] == 0x30 &&
-		buf[32773] == 0x31
+	var isoMagic = []byte{0x43, 0x44, 0x30, 0x30, 0x31}
+	return compareBytes(buf, isoMagic, 32769)
 }
 
 func MachO(buf []byte) bool {

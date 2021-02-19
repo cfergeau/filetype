@@ -29,35 +29,43 @@ var (
 )
 
 func Mp3(buf []byte) bool {
-	return len(buf) > 2 &&
-		((buf[0] == 0x49 && buf[1] == 0x44 && buf[2] == 0x33) ||
-			(buf[0] == 0xFF && buf[1] == 0xfb))
+	var (
+		mp3Magic1 = []byte{0x49, 0x44, 0x33}
+		mp3Magic2 = []byte{0xff, 0xfb}
+	)
+	return compareBytes(buf, mp3Magic1, 0) ||
+		compareBytes(buf, mp3Magic2, 0)
 }
 
 func M4a(buf []byte) bool {
-	return len(buf) > 10 &&
-		((buf[4] == 0x66 && buf[5] == 0x74 && buf[6] == 0x79 &&
-			buf[7] == 0x70 && buf[8] == 0x4D && buf[9] == 0x34 && buf[10] == 0x41) ||
-			(buf[0] == 0x4D && buf[1] == 0x34 && buf[2] == 0x41 && buf[3] == 0x20))
+	var (
+		m4aMagic1 = []byte{0x66, 0x74, 0x79, 0x70, 0x4D, 0x34, 0x41}
+		m4aMagic2 = []byte{0x4D, 0x34, 0x41, 0x20}
+	)
+	return compareBytes(buf, m4aMagic1, 4) ||
+		compareBytes(buf, m4aMagic2, 0)
 }
 
 func Wav(buf []byte) bool {
-	return len(buf) > 11 &&
-		buf[0] == 0x52 && buf[1] == 0x49 &&
-		buf[2] == 0x46 && buf[3] == 0x46 &&
-		buf[8] == 0x57 && buf[9] == 0x41 &&
-		buf[10] == 0x56 && buf[11] == 0x45
+	var (
+		wavMagic1 = []byte{0x52, 0x49, 0x46, 0x46}
+		wavMagic2 = []byte{0x57, 0x41, 0x56, 0x45}
+	)
+	return compareBytes(buf, wavMagic1, 0) &&
+		compareBytes(buf, wavMagic2, 8)
 }
 
 func Amr(buf []byte) bool {
+	var amrMagic = []byte{0x23, 0x21, 0x41, 0x4D, 0x52, 0x0A}
 	return len(buf) > 11 &&
-		buf[0] == 0x23 && buf[1] == 0x21 &&
-		buf[2] == 0x41 && buf[3] == 0x4D &&
-		buf[4] == 0x52 && buf[5] == 0x0A
+		compareBytes(buf, amrMagic, 0)
 }
 
 func Aac(buf []byte) bool {
-	return len(buf) > 1 &&
-		((buf[0] == 0xFF && buf[1] == 0xF1) ||
-			(buf[0] == 0xFF && buf[1] == 0xF9))
+	var (
+		aacMagic1 = []byte{0xFF, 0xF1}
+		aacMagic2 = []byte{0xFF, 0xF9}
+	)
+	return compareBytes(buf, aacMagic1, 0) ||
+		compareBytes(buf, aacMagic2, 8)
 }

@@ -37,45 +37,44 @@ var (
 )
 
 func M4v(buf []byte) bool {
-	return len(buf) > 10 &&
-		buf[4] == 0x66 && buf[5] == 0x74 &&
-		buf[6] == 0x79 && buf[7] == 0x70 &&
-		buf[8] == 0x4D && buf[9] == 0x34 &&
-		buf[10] == 0x56
+	var m4vMagic = []byte{0x66, 0x74, 0x79, 0x70, 0x4D, 0x34, 0x56}
+	return compareBytes(buf, m4vMagic, 4)
 }
 
+var mkvMagic = []byte{0x1A, 0x45, 0xDF, 0xA3}
+
 func Mkv(buf []byte) bool {
-	return len(buf) > 3 &&
-		buf[0] == 0x1A && buf[1] == 0x45 &&
-		buf[2] == 0xDF && buf[3] == 0xA3 &&
+	return compareBytes(buf, mkvMagic, 0) &&
 		containsMatroskaSignature(buf, []byte{'m', 'a', 't', 'r', 'o', 's', 'k', 'a'})
 }
 
 func Webm(buf []byte) bool {
-	return len(buf) > 3 &&
-		buf[0] == 0x1A && buf[1] == 0x45 &&
-		buf[2] == 0xDF && buf[3] == 0xA3 &&
+	return compareBytes(buf, mkvMagic, 0) &&
 		containsMatroskaSignature(buf, []byte{'w', 'e', 'b', 'm'})
 }
 
 func Mov(buf []byte) bool {
-	return len(buf) > 15 && ((buf[0] == 0x0 && buf[1] == 0x0 &&
-		buf[2] == 0x0 && buf[3] == 0x14 &&
-		buf[4] == 0x66 && buf[5] == 0x74 &&
-		buf[6] == 0x79 && buf[7] == 0x70) ||
-		(buf[4] == 0x6d && buf[5] == 0x6f && buf[6] == 0x6f && buf[7] == 0x76) ||
-		(buf[4] == 0x6d && buf[5] == 0x64 && buf[6] == 0x61 && buf[7] == 0x74) ||
-		(buf[12] == 0x6d && buf[13] == 0x64 && buf[14] == 0x61 && buf[15] == 0x74))
+
+	var (
+		movMagic1 = []byte{0x00, 0x00, 0x00, 0x14, 0x66, 0x74, 0x79, 0x70}
+		movMagic2 = []byte{0x6d, 0x6f, 0x6f, 0x76}
+		movMagic3 = []byte{0x6d, 0x64, 0x61, 0x74}
+		movMagic4 = []byte{0x6d, 0x64, 0x61, 0x74}
+	)
+	return compareBytes(buf, movMagic1, 0) ||
+		compareBytes(buf, movMagic2, 4) ||
+		compareBytes(buf, movMagic3, 4) ||
+		compareBytes(buf, movMagic4, 12)
 }
 
 func Avi(buf []byte) bool {
-	return len(buf) > 10 &&
-		buf[0] == 0x52 && buf[1] == 0x49 &&
-		buf[2] == 0x46 && buf[3] == 0x46 &&
-		buf[8] == 0x41 && buf[9] == 0x56 &&
-		buf[10] == 0x49
+	var (
+		aviMagic1 = []byte{0x52, 0x49, 0x46, 0x46}
+		aviMagic2 = []byte{0x41, 0x56, 0x49}
+	)
+	return compareBytes(buf, aviMagic1, 0) &&
+		compareBytes(buf, aviMagic2, 8)
 }
-
 
 func Mpeg(buf []byte) bool {
 	return len(buf) > 3 &&
@@ -118,10 +117,8 @@ func Mp4(buf []byte) bool {
 }
 
 func Match3gp(buf []byte) bool {
-	return len(buf) > 10 &&
-		buf[4] == 0x66 && buf[5] == 0x74 && buf[6] == 0x79 &&
-		buf[7] == 0x70 && buf[8] == 0x33 && buf[9] == 0x67 &&
-		buf[10] == 0x70
+	var threegpMagic = []byte{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70}
+	return compareBytes(buf, threegpMagic, 4)
 }
 
 func containsMatroskaSignature(buf, subType []byte) bool {

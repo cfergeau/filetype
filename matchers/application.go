@@ -20,19 +20,25 @@ var (
 
 // Dex detects dalvik executable(DEX)
 func Dex(buf []byte) bool {
+	var dexMagic = []byte{
+		0x64, 0x65, 0x78, 0x0A,
+	}
 	// https://source.android.com/devices/tech/dalvik/dex-format#dex-file-magic
 	return len(buf) > 36 &&
 		// magic
-		buf[0] == 0x64 && buf[1] == 0x65 && buf[2] == 0x78 && buf[3] == 0x0A &&
-		// file sise
+		compareBytes(buf, dexMagic, 0) &&
+		// file size
 		buf[36] == 0x70
 }
 
 // Dey Optimized Dalvik Executable(ODEX)
 func Dey(buf []byte) bool {
+	var deyMagic = []byte{
+		0x64, 0x65, 0x78, 0x0A,
+	}
 	return len(buf) > 100 &&
 		// dey magic
-		buf[0] == 0x64 && buf[1] == 0x65 && buf[2] == 0x79 && buf[3] == 0x0A &&
+		compareBytes(buf, deyMagic, 0) &&
 		// dex
 		Dex(buf[40:100])
 }

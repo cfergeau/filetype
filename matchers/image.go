@@ -66,24 +66,31 @@ var (
 )
 
 func Webp(buf []byte) bool {
-	return len(buf) > 11 &&
-		buf[8] == 0x57 && buf[9] == 0x45 &&
-		buf[10] == 0x42 && buf[11] == 0x50
+	var webpMagic = []byte{
+		0x57, 0x45, 0x42, 0x50,
+	}
+	return compareBytes(buf, webpMagic, 8)
 }
 
+var (
+	tiffMagicLittleEndian = []byte{0x49, 0x49, 0x2A, 0x00}
+	tiffMagicBigEndian    = []byte{0x4D, 0x4D, 0x00, 0x2A}
+	cr2Magic              = []byte{
+		0x43, 0x52, // CR2 magic word
+		0x02, // CR2 major version
+	}
+)
+
 func CR2(buf []byte) bool {
-	return len(buf) > 10 &&
-		((buf[0] == 0x49 && buf[1] == 0x49 && buf[2] == 0x2A && buf[3] == 0x0) || // Little Endian
-			(buf[0] == 0x4D && buf[1] == 0x4D && buf[2] == 0x0 && buf[3] == 0x2A)) && // Big Endian
-		buf[8] == 0x43 && buf[9] == 0x52 && // CR2 magic word
-		buf[10] == 0x02 // CR2 major version
+	return (compareBytes(buf, tiffMagicLittleEndian, 0) ||
+		compareBytes(buf, tiffMagicBigEndian, 0)) &&
+		compareBytes(buf, cr2Magic, 8)
 }
 
 func Tiff(buf []byte) bool {
-	return len(buf) > 10 &&
-		((buf[0] == 0x49 && buf[1] == 0x49 && buf[2] == 0x2A && buf[3] == 0x0) || // Little Endian
-			(buf[0] == 0x4D && buf[1] == 0x4D && buf[2] == 0x0 && buf[3] == 0x2A)) && // Big Endian
-		!CR2(buf) // To avoid conflicts differentiate Tiff from CR2
+	return (compareBytes(buf, tiffMagicLittleEndian, 0) ||
+		compareBytes(buf, tiffMagicBigEndian, 0)) &&
+		!compareBytes(buf, cr2Magic, 8) // To avoid conflicts differentiate Tiff from CR2
 }
 
 func Heif(buf []byte) bool {
