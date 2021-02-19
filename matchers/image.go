@@ -19,55 +19,51 @@ var (
 )
 
 var Image = Map{
-	TypeJpeg:     Jpeg,
-	TypeJpeg2000: Jpeg2000,
-	TypePng:      Png,
-	TypeGif:      Gif,
+	TypeJpeg:     bytePrefixMatcher(jpegMagic),
+	TypeJpeg2000: bytePrefixMatcher(jpeg2000Magic),
+	TypePng:      bytePrefixMatcher(pngMagic),
+	TypeGif:      bytePrefixMatcher(gifMagic),
 	TypeWebp:     Webp,
 	TypeCR2:      CR2,
 	TypeTiff:     Tiff,
-	TypeBmp:      Bmp,
-	TypeJxr:      Jxr,
-	TypePsd:      Psd,
-	TypeIco:      Ico,
+	TypeBmp:      bytePrefixMatcher(bmpMagic),
+	TypeJxr:      bytePrefixMatcher(jxrMagic),
+	TypePsd:      bytePrefixMatcher(psdMagic),
+	TypeIco:      bytePrefixMatcher(icoMagic),
 	TypeHeif:     Heif,
-	TypeDwg:      Dwg,
+	TypeDwg:      bytePrefixMatcher(dwgMagic),
 }
 
-func Jpeg(buf []byte) bool {
-	return len(buf) > 2 &&
-		buf[0] == 0xFF &&
-		buf[1] == 0xD8 &&
-		buf[2] == 0xFF
-}
-
-func Jpeg2000(buf []byte) bool {
-	return len(buf) > 12 &&
-		buf[0] == 0x0 &&
-		buf[1] == 0x0 &&
-		buf[2] == 0x0 &&
-		buf[3] == 0xC &&
-		buf[4] == 0x6A &&
-		buf[5] == 0x50 &&
-		buf[6] == 0x20 &&
-		buf[7] == 0x20 &&
-		buf[8] == 0xD &&
-		buf[9] == 0xA &&
-		buf[10] == 0x87 &&
-		buf[11] == 0xA &&
-		buf[12] == 0x0
-}
-
-func Png(buf []byte) bool {
-	return len(buf) > 3 &&
-		buf[0] == 0x89 && buf[1] == 0x50 &&
-		buf[2] == 0x4E && buf[3] == 0x47
-}
-
-func Gif(buf []byte) bool {
-	return len(buf) > 2 &&
-		buf[0] == 0x47 && buf[1] == 0x49 && buf[2] == 0x46
-}
+var (
+	jpegMagic = []byte{
+		0xFF, 0xD8, 0xFF,
+	}
+	jpeg2000Magic = []byte{
+		0x00, 0x00, 0x00, 0x0C, 0x6A, 0x50, 0x20, 0x20,
+		0x0D, 0x0A, 0x87, 0x0A, 0x00,
+	}
+	pngMagic = []byte{
+		0x89, 0x50, 0x4E, 0x47,
+	}
+	gifMagic = []byte{
+		0x47, 0x49, 0x46,
+	}
+	bmpMagic = []byte{
+		0x42, 0x4D,
+	}
+	jxrMagic = []byte{
+		0x49, 0x49, 0xBC,
+	}
+	psdMagic = []byte{
+		0x38, 0x42, 0x50, 0x53,
+	}
+	icoMagic = []byte{
+		0x00, 0x00, 0x01, 0x00,
+	}
+	dwgMagic = []byte{
+		0x41, 0x43, 0x31, 0x30,
+	}
+)
 
 func Webp(buf []byte) bool {
 	return len(buf) > 11 &&
@@ -90,31 +86,6 @@ func Tiff(buf []byte) bool {
 		!CR2(buf) // To avoid conflicts differentiate Tiff from CR2
 }
 
-func Bmp(buf []byte) bool {
-	return len(buf) > 1 &&
-		buf[0] == 0x42 &&
-		buf[1] == 0x4D
-}
-
-func Jxr(buf []byte) bool {
-	return len(buf) > 2 &&
-		buf[0] == 0x49 &&
-		buf[1] == 0x49 &&
-		buf[2] == 0xBC
-}
-
-func Psd(buf []byte) bool {
-	return len(buf) > 3 &&
-		buf[0] == 0x38 && buf[1] == 0x42 &&
-		buf[2] == 0x50 && buf[3] == 0x53
-}
-
-func Ico(buf []byte) bool {
-	return len(buf) > 3 &&
-		buf[0] == 0x00 && buf[1] == 0x00 &&
-		buf[2] == 0x01 && buf[3] == 0x00
-}
-
 func Heif(buf []byte) bool {
 	if !isobmff.IsISOBMFF(buf) {
 		return false
@@ -134,10 +105,4 @@ func Heif(buf []byte) bool {
 	}
 
 	return false
-}
-
-func Dwg(buf []byte) bool {
-	return len(buf) > 3 &&
-		buf[0] == 0x41 && buf[1] == 0x43 &&
-		buf[2] == 0x31 && buf[3] == 0x30
 }

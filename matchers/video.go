@@ -22,11 +22,19 @@ var Video = Map{
 	TypeWebm: Webm,
 	TypeMov:  Mov,
 	TypeAvi:  Avi,
-	TypeWmv:  Wmv,
+	TypeWmv:  bytePrefixMatcher(wmvMagic),
 	TypeMpeg: Mpeg,
-	TypeFlv:  Flv,
+	TypeFlv:  bytePrefixMatcher(flvMagic),
 	Type3gp:  Match3gp,
 }
+
+var (
+	wmvMagic = []byte{
+		0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11,
+		0xA6, 0xD9,
+	}
+	flvMagic = []byte{0x46, 0x4C, 0x56, 0x01}
+)
 
 func M4v(buf []byte) bool {
 	return len(buf) > 10 &&
@@ -68,26 +76,12 @@ func Avi(buf []byte) bool {
 		buf[10] == 0x49
 }
 
-func Wmv(buf []byte) bool {
-	return len(buf) > 9 &&
-		buf[0] == 0x30 && buf[1] == 0x26 &&
-		buf[2] == 0xB2 && buf[3] == 0x75 &&
-		buf[4] == 0x8E && buf[5] == 0x66 &&
-		buf[6] == 0xCF && buf[7] == 0x11 &&
-		buf[8] == 0xA6 && buf[9] == 0xD9
-}
 
 func Mpeg(buf []byte) bool {
 	return len(buf) > 3 &&
 		buf[0] == 0x0 && buf[1] == 0x0 &&
 		buf[2] == 0x1 && buf[3] >= 0xb0 &&
 		buf[3] <= 0xbf
-}
-
-func Flv(buf []byte) bool {
-	return len(buf) > 3 &&
-		buf[0] == 0x46 && buf[1] == 0x4C &&
-		buf[2] == 0x56 && buf[3] == 0x01
 }
 
 func Mp4(buf []byte) bool {

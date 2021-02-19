@@ -8,38 +8,23 @@ var (
 )
 
 var Font = Map{
-	TypeWoff:  Woff,
-	TypeWoff2: Woff2,
-	TypeTtf:   Ttf,
-	TypeOtf:   Otf,
+	TypeWoff:  bytePrefixMatcher(woffMagic),
+	TypeWoff2: bytePrefixMatcher(woff2Magic),
+	TypeTtf:   bytePrefixMatcher(ttfMagic),
+	TypeOtf:   bytePrefixMatcher(otfMagic),
 }
 
-func Woff(buf []byte) bool {
-	return len(buf) > 7 &&
-		buf[0] == 0x77 && buf[1] == 0x4F &&
-		buf[2] == 0x46 && buf[3] == 0x46 &&
-		buf[4] == 0x00 && buf[5] == 0x01 &&
-		buf[6] == 0x00 && buf[7] == 0x00
-}
-
-func Woff2(buf []byte) bool {
-	return len(buf) > 7 &&
-		buf[0] == 0x77 && buf[1] == 0x4F &&
-		buf[2] == 0x46 && buf[3] == 0x32 &&
-		buf[4] == 0x00 && buf[5] == 0x01 &&
-		buf[6] == 0x00 && buf[7] == 0x00
-}
-
-func Ttf(buf []byte) bool {
-	return len(buf) > 4 &&
-		buf[0] == 0x00 && buf[1] == 0x01 &&
-		buf[2] == 0x00 && buf[3] == 0x00 &&
-		buf[4] == 0x00
-}
-
-func Otf(buf []byte) bool {
-	return len(buf) > 4 &&
-		buf[0] == 0x4F && buf[1] == 0x54 &&
-		buf[2] == 0x54 && buf[3] == 0x4F &&
-		buf[4] == 0x00
-}
+var (
+	woffMagic = []byte{
+		0x77, 0x4F, 0x46, 0x46, 0x00, 0x01, 0x00, 0x00,
+	}
+	woff2Magic = []byte{
+		0x77, 0x4F, 0x46, 0x32, 0x00, 0x01, 0x00, 0x00,
+	}
+	ttfMagic = []byte{
+		0x00, 0x01, 0x00, 0x00, 0x00,
+	}
+	otfMagic = []byte{
+		0x4F, 0x54, 0x54, 0x4F, 0x00,
+	}
+)

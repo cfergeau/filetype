@@ -12,21 +12,21 @@ var (
 )
 
 var Audio = Map{
-	TypeMidi: Midi,
+	TypeMidi: bytePrefixMatcher(midiMagic),
 	TypeMp3:  Mp3,
 	TypeM4a:  M4a,
-	TypeOgg:  Ogg,
-	TypeFlac: Flac,
+	TypeOgg:  bytePrefixMatcher(oggMagic),
+	TypeFlac: bytePrefixMatcher(flacMagic),
 	TypeWav:  Wav,
 	TypeAmr:  Amr,
 	TypeAac:  Aac,
 }
 
-func Midi(buf []byte) bool {
-	return len(buf) > 3 &&
-		buf[0] == 0x4D && buf[1] == 0x54 &&
-		buf[2] == 0x68 && buf[3] == 0x64
-}
+var (
+	midiMagic = []byte{0x4D, 0x54, 0x68, 0x64}
+	oggMagic  = []byte{0x4F, 0x67, 0x67, 0x53}
+	flacMagic = []byte{0x66, 0x4C, 0x61, 0x43}
+)
 
 func Mp3(buf []byte) bool {
 	return len(buf) > 2 &&
@@ -39,18 +39,6 @@ func M4a(buf []byte) bool {
 		((buf[4] == 0x66 && buf[5] == 0x74 && buf[6] == 0x79 &&
 			buf[7] == 0x70 && buf[8] == 0x4D && buf[9] == 0x34 && buf[10] == 0x41) ||
 			(buf[0] == 0x4D && buf[1] == 0x34 && buf[2] == 0x41 && buf[3] == 0x20))
-}
-
-func Ogg(buf []byte) bool {
-	return len(buf) > 3 &&
-		buf[0] == 0x4F && buf[1] == 0x67 &&
-		buf[2] == 0x67 && buf[3] == 0x53
-}
-
-func Flac(buf []byte) bool {
-	return len(buf) > 3 &&
-		buf[0] == 0x66 && buf[1] == 0x4C &&
-		buf[2] == 0x61 && buf[3] == 0x43
 }
 
 func Wav(buf []byte) bool {
