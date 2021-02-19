@@ -33,9 +33,9 @@ var (
 
 var Archive = Map{
 	TypeEpub:   bytePrefixMatcher(epubMagic),
-	TypeZip:    Zip,
-	TypeTar:    Tar,
-	TypeRar:    Rar,
+	TypeZip:    zip,
+	TypeTar:    tar,
+	TypeRar:    rar,
 	TypeGz:     bytePrefixMatcher(gzMagic),
 	TypeBz2:    bytePrefixMatcher(bz2Magic),
 	Type7z:     bytePrefixMatcher(sevenzMagic),
@@ -43,23 +43,23 @@ var Archive = Map{
 	TypeZstd:   bytePrefixMatcher(zstdMagic),
 	TypePdf:    bytePrefixMatcher(pdfMagic),
 	TypeExe:    bytePrefixMatcher(exeMagic),
-	TypeSwf:    Swf,
+	TypeSwf:    swf,
 	TypeRtf:    bytePrefixMatcher(rtfMagic),
-	TypeEot:    Eot,
+	TypeEot:    eot,
 	TypePs:     bytePrefixMatcher(psMagic),
 	TypeSqlite: bytePrefixMatcher(sqliteMagic),
 	TypeNes:    bytePrefixMatcher(nesMagic),
 	TypeCrx:    bytePrefixMatcher(crxMagic),
-	TypeCab:    Cab,
+	TypeCab:    cab,
 	TypeDeb:    bytePrefixMatcher(debMagic),
 	TypeAr:     bytePrefixMatcher(arMagic),
-	TypeZ:      Z,
+	TypeZ:      z,
 	TypeLz:     bytePrefixMatcher(lzMagic),
-	TypeRpm:    Rpm,
-	TypeElf:    Elf,
-	TypeDcm:    Dcm,
-	TypeIso:    Iso,
-	TypeMachO:  MachO,
+	TypeRpm:    rpm,
+	TypeElf:    elf,
+	TypeDcm:    dcm,
+	TypeIso:    iso,
+	TypeMachO:  machO,
 }
 
 var (
@@ -96,19 +96,19 @@ func bytePrefixMatcher(magicPattern []byte) Matcher {
 	}
 }
 
-func Zip(buf []byte) bool {
+func zip(buf []byte) bool {
 	return len(buf) > 3 &&
 		buf[0] == 0x50 && buf[1] == 0x4B &&
 		(buf[2] == 0x3 || buf[2] == 0x5 || buf[2] == 0x7) &&
 		(buf[3] == 0x4 || buf[3] == 0x6 || buf[3] == 0x8)
 }
 
-func Tar(buf []byte) bool {
+func tar(buf []byte) bool {
 	var tarMagic = []byte{0x75, 0x73, 0x74, 0x61, 0x72}
 	return compareBytes(buf, tarMagic, 257)
 }
 
-func Rar(buf []byte) bool {
+func rar(buf []byte) bool {
 	var (
 		rarMagic1 = []byte{0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x00}
 		rarMagic2 = []byte{0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x01}
@@ -117,7 +117,7 @@ func Rar(buf []byte) bool {
 		compareBytes(buf, rarMagic2, 0)
 }
 
-func Swf(buf []byte) bool {
+func swf(buf []byte) bool {
 	var (
 		swfMagic1 = []byte{0x43, 0x57, 0x53}
 		swfMagic2 = []byte{0x46, 0x57, 0x53}
@@ -126,7 +126,7 @@ func Swf(buf []byte) bool {
 		compareBytes(buf, swfMagic2, 0)
 }
 
-func Cab(buf []byte) bool {
+func cab(buf []byte) bool {
 	var (
 		cabMagic1 = []byte{0x4D, 0x53, 0x43, 0x46}
 		cabMagic2 = []byte{0x49, 0x53, 0x63, 0x28}
@@ -135,7 +135,7 @@ func Cab(buf []byte) bool {
 		compareBytes(buf, cabMagic2, 0)
 }
 
-func Eot(buf []byte) bool {
+func eot(buf []byte) bool {
 	return len(buf) > 35 &&
 		buf[34] == 0x4C && buf[35] == 0x50 &&
 		((buf[8] == 0x02 && buf[9] == 0x00 &&
@@ -145,7 +145,7 @@ func Eot(buf []byte) bool {
 				buf[10] == 0x02))
 }
 
-func Z(buf []byte) bool {
+func z(buf []byte) bool {
 	var (
 		zMagic1 = []byte{0x1F, 0xA0}
 		zMagic2 = []byte{0x1F, 0x9D}
@@ -154,13 +154,13 @@ func Z(buf []byte) bool {
 		compareBytes(buf, zMagic2, 0)
 }
 
-func Rpm(buf []byte) bool {
+func rpm(buf []byte) bool {
 	var rpmMagic = []byte{0xED, 0xAB, 0xEE, 0xDB}
 	return len(buf) > 96 &&
 		compareBytes(buf, rpmMagic, 0)
 }
 
-func Elf(buf []byte) bool {
+func elf(buf []byte) bool {
 	var elfMagic = []byte{
 		0x7F, 0x45, 0x4C, 0x46,
 	}
@@ -168,17 +168,17 @@ func Elf(buf []byte) bool {
 		compareBytes(buf, elfMagic, 0)
 }
 
-func Dcm(buf []byte) bool {
+func dcm(buf []byte) bool {
 	var dcmMagic = []byte{0x44, 0x49, 0x43, 0x4D}
 	return compareBytes(buf, dcmMagic, 128)
 }
 
-func Iso(buf []byte) bool {
+func iso(buf []byte) bool {
 	var isoMagic = []byte{0x43, 0x44, 0x30, 0x30, 0x31}
 	return compareBytes(buf, isoMagic, 32769)
 }
 
-func MachO(buf []byte) bool {
+func machO(buf []byte) bool {
 	return len(buf) > 3 && ((buf[0] == 0xFE && buf[1] == 0xED && buf[2] == 0xFA && buf[3] == 0xCF) ||
 		(buf[0] == 0xFE && buf[1] == 0xED && buf[2] == 0xFA && buf[3] == 0xCE) ||
 		(buf[0] == 0xBE && buf[1] == 0xBA && buf[2] == 0xFE && buf[3] == 0xCA) ||

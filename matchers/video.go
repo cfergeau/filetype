@@ -16,16 +16,16 @@ var (
 )
 
 var Video = Map{
-	TypeMp4:  Mp4,
-	TypeM4v:  M4v,
-	TypeMkv:  Mkv,
-	TypeWebm: Webm,
-	TypeMov:  Mov,
-	TypeAvi:  Avi,
+	TypeMp4:  mp4,
+	TypeM4v:  m4v,
+	TypeMkv:  mkv,
+	TypeWebm: webm,
+	TypeMov:  mov,
+	TypeAvi:  avi,
 	TypeWmv:  bytePrefixMatcher(wmvMagic),
-	TypeMpeg: Mpeg,
+	TypeMpeg: mpeg,
 	TypeFlv:  bytePrefixMatcher(flvMagic),
-	Type3gp:  Match3gp,
+	Type3gp:  match3gp,
 }
 
 var (
@@ -36,24 +36,24 @@ var (
 	flvMagic = []byte{0x46, 0x4C, 0x56, 0x01}
 )
 
-func M4v(buf []byte) bool {
+func m4v(buf []byte) bool {
 	var m4vMagic = []byte{0x66, 0x74, 0x79, 0x70, 0x4D, 0x34, 0x56}
 	return compareBytes(buf, m4vMagic, 4)
 }
 
 var mkvMagic = []byte{0x1A, 0x45, 0xDF, 0xA3}
 
-func Mkv(buf []byte) bool {
+func mkv(buf []byte) bool {
 	return compareBytes(buf, mkvMagic, 0) &&
 		containsMatroskaSignature(buf, []byte{'m', 'a', 't', 'r', 'o', 's', 'k', 'a'})
 }
 
-func Webm(buf []byte) bool {
+func webm(buf []byte) bool {
 	return compareBytes(buf, mkvMagic, 0) &&
 		containsMatroskaSignature(buf, []byte{'w', 'e', 'b', 'm'})
 }
 
-func Mov(buf []byte) bool {
+func mov(buf []byte) bool {
 
 	var (
 		movMagic1 = []byte{0x00, 0x00, 0x00, 0x14, 0x66, 0x74, 0x79, 0x70}
@@ -67,7 +67,7 @@ func Mov(buf []byte) bool {
 		compareBytes(buf, movMagic4, 12)
 }
 
-func Avi(buf []byte) bool {
+func avi(buf []byte) bool {
 	var (
 		aviMagic1 = []byte{0x52, 0x49, 0x46, 0x46}
 		aviMagic2 = []byte{0x41, 0x56, 0x49}
@@ -76,14 +76,14 @@ func Avi(buf []byte) bool {
 		compareBytes(buf, aviMagic2, 8)
 }
 
-func Mpeg(buf []byte) bool {
+func mpeg(buf []byte) bool {
 	return len(buf) > 3 &&
 		buf[0] == 0x0 && buf[1] == 0x0 &&
 		buf[2] == 0x1 && buf[3] >= 0xb0 &&
 		buf[3] <= 0xbf
 }
 
-func Mp4(buf []byte) bool {
+func mp4(buf []byte) bool {
 	return len(buf) > 11 &&
 		(buf[4] == 'f' && buf[5] == 't' && buf[6] == 'y' && buf[7] == 'p') &&
 		((buf[8] == 'a' && buf[9] == 'v' && buf[10] == 'c' && buf[11] == '1') ||
@@ -116,7 +116,7 @@ func Mp4(buf []byte) bool {
 			(buf[8] == 'F' && buf[9] == '4' && buf[10] == 'P' && buf[11] == ' '))
 }
 
-func Match3gp(buf []byte) bool {
+func match3gp(buf []byte) bool {
 	var threegpMagic = []byte{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70}
 	return compareBytes(buf, threegpMagic, 4)
 }

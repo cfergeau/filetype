@@ -8,8 +8,8 @@ var (
 
 var Application = Map{
 	TypeWasm: bytePrefixMatcher(wasmMagic),
-	TypeDex:  Dex,
-	TypeDey:  Dey,
+	TypeDex:  dex,
+	TypeDey:  dey,
 }
 
 var (
@@ -19,7 +19,7 @@ var (
 )
 
 // Dex detects dalvik executable(DEX)
-func Dex(buf []byte) bool {
+func dex(buf []byte) bool {
 	var dexMagic = []byte{
 		0x64, 0x65, 0x78, 0x0A,
 	}
@@ -32,7 +32,7 @@ func Dex(buf []byte) bool {
 }
 
 // Dey Optimized Dalvik Executable(ODEX)
-func Dey(buf []byte) bool {
+func dey(buf []byte) bool {
 	var deyMagic = []byte{
 		0x64, 0x65, 0x78, 0x0A,
 	}
@@ -40,5 +40,5 @@ func Dey(buf []byte) bool {
 		// dey magic
 		compareBytes(buf, deyMagic, 0) &&
 		// dex
-		Dex(buf[40:100])
+		dex(buf[40:100])
 }

@@ -23,14 +23,14 @@ var Image = Map{
 	TypeJpeg2000: bytePrefixMatcher(jpeg2000Magic),
 	TypePng:      bytePrefixMatcher(pngMagic),
 	TypeGif:      bytePrefixMatcher(gifMagic),
-	TypeWebp:     Webp,
-	TypeCR2:      CR2,
-	TypeTiff:     Tiff,
+	TypeWebp:     webp,
+	TypeCR2:      cr2,
+	TypeTiff:     tiff,
 	TypeBmp:      bytePrefixMatcher(bmpMagic),
 	TypeJxr:      bytePrefixMatcher(jxrMagic),
 	TypePsd:      bytePrefixMatcher(psdMagic),
 	TypeIco:      bytePrefixMatcher(icoMagic),
-	TypeHeif:     Heif,
+	TypeHeif:     heif,
 	TypeDwg:      bytePrefixMatcher(dwgMagic),
 }
 
@@ -65,7 +65,7 @@ var (
 	}
 )
 
-func Webp(buf []byte) bool {
+func webp(buf []byte) bool {
 	var webpMagic = []byte{
 		0x57, 0x45, 0x42, 0x50,
 	}
@@ -81,19 +81,19 @@ var (
 	}
 )
 
-func CR2(buf []byte) bool {
+func cr2(buf []byte) bool {
 	return (compareBytes(buf, tiffMagicLittleEndian, 0) ||
 		compareBytes(buf, tiffMagicBigEndian, 0)) &&
 		compareBytes(buf, cr2Magic, 8)
 }
 
-func Tiff(buf []byte) bool {
+func tiff(buf []byte) bool {
 	return (compareBytes(buf, tiffMagicLittleEndian, 0) ||
 		compareBytes(buf, tiffMagicBigEndian, 0)) &&
 		!compareBytes(buf, cr2Magic, 8) // To avoid conflicts differentiate Tiff from CR2
 }
 
-func Heif(buf []byte) bool {
+func heif(buf []byte) bool {
 	if !isobmff.IsISOBMFF(buf) {
 		return false
 	}

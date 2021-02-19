@@ -15,12 +15,12 @@ var (
 )
 
 var Document = Map{
-	TypeDoc:  Doc,
-	TypeDocx: Docx,
-	TypeXls:  Xls,
-	TypeXlsx: Xlsx,
-	TypePpt:  Ppt,
-	TypePptx: Pptx,
+	TypeDoc:  doc,
+	TypeDocx: docx,
+	TypeXls:  xls,
+	TypeXlsx: xlsx,
+	TypePpt:  ppt,
+	TypePptx: pptx,
 }
 
 type docType int
@@ -36,7 +36,7 @@ const (
 )
 
 //reference: https://bz.apache.org/ooo/show_bug.cgi?id=111457
-func Doc(buf []byte) bool {
+func doc(buf []byte) bool {
 	if len(buf) > 513 {
 		return buf[0] == 0xD0 && buf[1] == 0xCF &&
 			buf[2] == 0x11 && buf[3] == 0xE0 &&
@@ -48,12 +48,12 @@ func Doc(buf []byte) bool {
 	}
 }
 
-func Docx(buf []byte) bool {
+func docx(buf []byte) bool {
 	typ, ok := msooxml(buf)
 	return ok && typ == TYPE_DOCX
 }
 
-func Xls(buf []byte) bool {
+func xls(buf []byte) bool {
 	if len(buf) > 513 {
 		return buf[0] == 0xD0 && buf[1] == 0xCF &&
 			buf[2] == 0x11 && buf[3] == 0xE0 &&
@@ -65,12 +65,12 @@ func Xls(buf []byte) bool {
 	}
 }
 
-func Xlsx(buf []byte) bool {
+func xlsx(buf []byte) bool {
 	typ, ok := msooxml(buf)
 	return ok && typ == TYPE_XLSX
 }
 
-func Ppt(buf []byte) bool {
+func ppt(buf []byte) bool {
 	if len(buf) > 513 {
 		return buf[0] == 0xD0 && buf[1] == 0xCF &&
 			buf[2] == 0x11 && buf[3] == 0xE0 &&
@@ -82,7 +82,7 @@ func Ppt(buf []byte) bool {
 	}
 }
 
-func Pptx(buf []byte) bool {
+func pptx(buf []byte) bool {
 	typ, ok := msooxml(buf)
 	return ok && typ == TYPE_PPTX
 }

@@ -13,13 +13,13 @@ var (
 
 var Audio = Map{
 	TypeMidi: bytePrefixMatcher(midiMagic),
-	TypeMp3:  Mp3,
-	TypeM4a:  M4a,
+	TypeMp3:  mp3,
+	TypeM4a:  m4a,
 	TypeOgg:  bytePrefixMatcher(oggMagic),
 	TypeFlac: bytePrefixMatcher(flacMagic),
-	TypeWav:  Wav,
-	TypeAmr:  Amr,
-	TypeAac:  Aac,
+	TypeWav:  wav,
+	TypeAmr:  amr,
+	TypeAac:  aac,
 }
 
 var (
@@ -28,7 +28,7 @@ var (
 	flacMagic = []byte{0x66, 0x4C, 0x61, 0x43}
 )
 
-func Mp3(buf []byte) bool {
+func mp3(buf []byte) bool {
 	var (
 		mp3Magic1 = []byte{0x49, 0x44, 0x33}
 		mp3Magic2 = []byte{0xff, 0xfb}
@@ -37,7 +37,7 @@ func Mp3(buf []byte) bool {
 		compareBytes(buf, mp3Magic2, 0)
 }
 
-func M4a(buf []byte) bool {
+func m4a(buf []byte) bool {
 	var (
 		m4aMagic1 = []byte{0x66, 0x74, 0x79, 0x70, 0x4D, 0x34, 0x41}
 		m4aMagic2 = []byte{0x4D, 0x34, 0x41, 0x20}
@@ -46,7 +46,7 @@ func M4a(buf []byte) bool {
 		compareBytes(buf, m4aMagic2, 0)
 }
 
-func Wav(buf []byte) bool {
+func wav(buf []byte) bool {
 	var (
 		wavMagic1 = []byte{0x52, 0x49, 0x46, 0x46}
 		wavMagic2 = []byte{0x57, 0x41, 0x56, 0x45}
@@ -55,13 +55,13 @@ func Wav(buf []byte) bool {
 		compareBytes(buf, wavMagic2, 8)
 }
 
-func Amr(buf []byte) bool {
+func amr(buf []byte) bool {
 	var amrMagic = []byte{0x23, 0x21, 0x41, 0x4D, 0x52, 0x0A}
 	return len(buf) > 11 &&
 		compareBytes(buf, amrMagic, 0)
 }
 
-func Aac(buf []byte) bool {
+func aac(buf []byte) bool {
 	var (
 		aacMagic1 = []byte{0xFF, 0xF1}
 		aacMagic2 = []byte{0xFF, 0xF9}
