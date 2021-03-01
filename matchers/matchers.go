@@ -49,3 +49,42 @@ func init() {
 	// Archive files will be checked last due to prepend above in func NewMatcher
 	register(Archive, Document, Font, Audio, Video, Image, Application)
 }
+
+type Pattern struct {
+	pattern []byte
+	offset  int
+	//mask []byte
+	//indent int
+	//range_length int
+	//word_size int
+}
+
+type Match struct {
+	patterns []Pattern
+}
+type Magic struct {
+	priority uint
+	matches  []Match
+}
+
+func (pattern Pattern) match(data []bytes) bool {
+	return compareBytes(data, pattern.pattern, offset)
+}
+
+func (match Match) match(data []bytes) bool {
+	for _, pattern := range match.patterns {
+		if !pattern.match(data) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (magic Magic) match(data []bytes) bool {
+	for _, match := range magic.matches {
+		if match.match(data) {
+			return true
+		}
+	}
+}
